@@ -97,7 +97,7 @@ def _test_report_path(parent_path, test_target):
     return parent_path + "bazel-testlogs/" + test_target.package + "/" + test_target.name
 
 def _sonarqube_impl(ctx):
-    sq_properties_file = ctx.actions.declare_file("sonar-project.properties")
+    sq_properties_file = ctx.actions.declare_file(ctx.attr.sq_properties_filename)
 
     local_runfiles = _build_sonar_project_properties(ctx, sq_properties_file)
 
@@ -132,6 +132,7 @@ _COMMON_ATTRS = dict(dict(), **{
     "test_targets": attr.string_list(default = []),
     "test_reports": attr.label_list(allow_files = True, default = []),
     "sq_properties_template": attr.label(allow_single_file = True, default = "@bazel_sonarqube//:sonar-project.properties.tpl"),
+    "sq_properties_filename": attr.string(),
     "sq_properties": attr.output(),
 })
 
@@ -227,7 +228,7 @@ def sonarqube(
         coverage_report = coverage_report,
         sonar_scanner = sonar_scanner,
         sq_properties_template = sq_properties_template,
-        sq_properties = "sonar-project.properties",
+        sq_properties_filename = "sonar-project-{name}.properties".format(name = name),
         tags = tags,
         visibility = visibility,
     )
