@@ -24,7 +24,7 @@ def sonarqube_coverage_generator_binary(name = None):
 def _build_sonar_project_properties(ctx, sq_properties_file):
     module_path = ctx.build_file_path.replace("/BUILD.bazel", "/").replace("/BUILD", "/")
     depth = len(module_path.split("/")) - 1
-    parent_path = "../" * depth
+    parent_path = "" if hasattr(ctx.attr, "scm_info") else "../" * depth
 
     # SonarQube requires test reports to be named like TEST-foo.xml, so we step
     # through `test_targets` to find the matching `test_reports` values, and
