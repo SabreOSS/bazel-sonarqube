@@ -5,6 +5,7 @@ filegroup(
         exclude = [".git/**/*[*"],  # gitk creates temp files with []
     ),
     tags = ["manual"],
+    visibility = ["//visibility:public"],
 )
 
 filegroup(
@@ -24,15 +25,42 @@ filegroup(
 load("@bazel_sonarqube//:defs.bzl", "sonarqube")
 
 sonarqube(
-    name = "sonarqube",
+    name = "sonarqube1",
     srcs = [],
     coverage_report = ":coverage_report",
     modules = {
         "//subproject:sq_subproject": "subproject",
+        "//another-subproject:sq_subproject": "another-subproject",
     },
-    project_key = "com.example.project:project",
-    project_name = "My Project",
+    project_key = "com.example.project:modularized-project",
+    project_name = "Modularized Project",
     scm_info = [":git"],
     tags = ["manual"],
     targets = [],
+)
+
+sonarqube(
+    name = "sonarqube2",
+    srcs = [
+        "//subproject/src/main/java/com/example:java_srcs",
+        "//another-subproject/src/main/java/com/example:java_srcs",
+    ],
+    coverage_report = "//:coverage_report",
+    project_key = "com.example.project:full-project",
+    project_name = "Full project",
+    scm_info = ["//:git"],
+    tags = ["manual"],
+    targets = [
+        "//subproject/src/main/java/com/example:app",
+        "//another-subproject/src/main/java/com/example:app",
+    ],
+    test_reports = ["//:test_reports"],
+    test_srcs = [
+        "//subproject/src/test/java/com/example:java_test_srcs",
+        "//another-subproject/src/test/java/com/example:java_test_srcs",
+    ],
+    test_targets = [
+        "//subproject/src/test/java/com/example:AppTest",
+        "//another-subproject/src/test/java/com/example:AppTest",
+    ],
 )
